@@ -1,0 +1,5 @@
+dataset/
+*.zip
+__pycache__/
+*.pdf
+*.ipynb

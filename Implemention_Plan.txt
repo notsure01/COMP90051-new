@@ -1,0 +1,108 @@
+COMP90051 Group Project — Scene Classification Robustness
+==========================================================
+
+Research question
+-----------------
+  "How does CNN-based scene classification degrade under simulated
+   real-world corruptions (occlusion, blur, fog, noise), and can
+   adversarial training improve robustness?"
+
+Dataset
+-------
+  Intel Image Classification — seg_train only (~14 034 images, 6 classes,
+  150×150 px).  https://www.kaggle.com/datasets/puneet6060/intel-image-classification
+  Place the dataset at:  dataset/seg_train/seg_train/<class_name>/
+
+Requirements
+------------
+  Python 3.10+
+  torch >= 2.0
+  torchvision >= 0.15
+  numpy
+  matplotlib
+
+  Install with:
+    pip install torch torchvision numpy matplotlib
+
+How to run
+----------
+  Step 1 — run experiments (nested CV, both experiments):
+    python main.py
+
+  Step 2 — generate all visualisations:
+    python generate_vis.py
+
+  Results JSON files are written to:  results/
+  Plots (PNG) are written to:         results/plots/
+  Summary table:                      results/summary_table.txt
+
+Configuration
+-------------
+  All settings are in config.py.  Key options:
+
+  SUBSET_PER_CLASS  (default 300)
+    Number of images sampled per class to keep runtime feasible.
+    Set to None to use all ~14 k images (much slower, ~hours on GPU).
+
+  INNER_EPOCHS / OUTER_EPOCHS  (default 5 / 15)
+    Epochs used for inner-CV HP evaluation and final outer-fold training.
+    Increase for better accuracy, decrease for faster runs.
+
+  BATCH_SIZE  (default 32)
+    Reduce if GPU runs out of memory.
+
+  DEVICE
+    Automatically set to "cuda" if a GPU is available, else "cpu".
+
+File overview
+-------------
+  config.py       — all constants, HP grids, paths
+  data_utils.py   — dataset loading, preprocessing transforms,
+                    four corruption types, k-fold splitter (from scratch)
+  models.py       — SimpleCNN, SimpleResNet, ViT (ICLR 2021)
+  metrics.py      — accuracy, precision, recall, F1 — all from scratch
+  train_utils.py  — training loop, nested CV, HP grid search,
+                    learning-curve experiment (all from scratch)
+  main.py         — orchestrates both experiments, prints summary
+  generate_vis.py — produces all figures and summary_table.txt
+
+Models
+------
+  SimpleCNN    (low complexity)   — 4 conv stages, BN, dropout, linear head
+  SimpleResNet (medium complexity)— 4 residual stages (~ResNet-18 lite)
+  ViT          (high complexity)  — Vision Transformer, Dosovitskiy et al.,
+                                    ICLR 2021 (patch sizes 8/16/32)
+
+Hyperparameters tuned (2 per model, 3 values each, middle chosen most)
+-----------------------------------------------------------------------
+  CNN     : lr ∈ {1e-4, 1e-3*, 1e-2},  dropout ∈ {0.2, 0.4*, 0.6}
+  ResNet  : lr ∈ {1e-4, 1e-3*, 1e-2},  weight_decay ∈ {1e-5, 1e-4*, 1e-3}
+  ViT     : lr ∈ {1e-5, 1e-4*, 1e-3},  patch_size ∈ {8, 16*, 32}
+  (* = middle / expected optimal value)
+
+Cross-validation
+----------------
+  Outer k = 10  (project requirement: k ≥ 10)
+  Inner k = 3   (project requirement: k ≥ 3)
+  Both implemented from scratch in data_utils.py and train_utils.py.
+
+Preprocessing
+-------------
+  Training : Resize(148×148) → RandomCrop(128×128) → RandomHorizontalFlip
+             → ToTensor → Normalize
+  Eval     : Resize(128×128) directly → ToTensor → Normalize
+  All images are explicitly forced to 128×128 regardless of original
+  aspect ratio.
+
+Normalisation statistics
+------------------------
+  Computed from the training subset at runtime (not hardcoded).
+  main.py calls compute_mean_std() once and saves to results/norm_stats.json.
+
+Metrics reported  (all computed from scratch in metrics.py)
+------------------------------------------------------------
+  Accuracy, Macro-Precision, Macro-Recall, Macro-F1
+  Confusion matrix (row-normalised, aggregated over 10 outer folds)
+  Error bars = ± 1 std across the 10 outer folds
+  Learning curves = accuracy vs. fraction of training samples (NOT loss
+                    vs. epochs — as required by the project guide)

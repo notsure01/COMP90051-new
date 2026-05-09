@@ -1,0 +1,63 @@
+============================================================
+ COMP90051 Project — Scene Classification Robustness
+ Device : cuda
+ Outer k: 10  |  Inner k: 3
+ Epochs : inner=5, outer=15
+============================================================
+
+Loading dataset …
+  Dataset size: 14034 images
+
+Normalisation stats loaded from results\norm_stats.json
+  mean = (0.4302, 0.4575, 0.4538)
+  std  = (0.2576,  0.2561,  0.2883)
+
+============================================================
+ EXPERIMENT 1 — Clean baseline
+============================================================
+
+  ╔══ Exp1-Clean │ CNN ══╗
+    [CNN | Outer  1/10]  Inner CV: 9 HP combos × 3 folds × 5 epochs
+      HP  1/9  [dropout=0.2  lr=0.0001]  val_acc=0.7646
+      HP  2/9  [dropout=0.4  lr=0.0001]  val_acc=0.7818
+      HP  3/9  [dropout=0.6  lr=0.0001]  val_acc=0.7665
+      HP  4/9  [dropout=0.2  lr=0.001]  val_acc=0.7816
+      HP  5/9  [dropout=0.4  lr=0.001]  val_acc=0.7903
+      HP  6/9  [dropout=0.6  lr=0.001]  val_acc=0.7702
+      HP  7/9  [dropout=0.2  lr=0.01]  val_acc=0.6806
+      HP  8/9  [dropout=0.4  lr=0.01]  val_acc=0.6824
+      HP  9/9  [dropout=0.6  lr=0.01]  val_acc=0.6671
+    [CNN | Outer  1/10]  ✓ Best HP: [dropout=0.4  lr=0.001]  val_acc=0.7903
+
+--- CNN: dropout=0.4  lr=0.001 ---
+
+============================================================
+Fold 1/10
+============================================================
+  Epoch [ 1/15]  train_loss=0.9279  train_acc=0.6389  [29.2s]
+  Epoch [ 2/15]  train_loss=0.7007  train_acc=0.7384  [29.5s]
+  Epoch [ 3/15]  train_loss=0.6339  train_acc=0.7622  [29.5s]
+  Epoch [ 4/15]  train_loss=0.5893  train_acc=0.7775  [29.6s]
+  Epoch [ 5/15]  train_loss=0.5541  train_acc=0.7966  [29.2s]
+  Epoch [ 6/15]  train_loss=0.5305  train_acc=0.8067  [29.4s]
+  Epoch [ 7/15]  train_loss=0.5127  train_acc=0.8150  [29.0s]
+  Epoch [ 8/15]  train_loss=0.4875  train_acc=0.8228  [28.9s]
+  Epoch [ 9/15]  train_loss=0.4796  train_acc=0.8248  [28.8s]
+  Epoch [10/15]  train_loss=0.4631  train_acc=0.8334  [29.0s]
+  Epoch [11/15]  train_loss=0.4533  train_acc=0.8371  [29.1s]
+  Epoch [12/15]  train_loss=0.4391  train_acc=0.8395  [28.9s]
+  Epoch [13/15]  train_loss=0.4277  train_acc=0.8462  [28.9s]
+  Epoch [14/15]  train_loss=0.4144  train_acc=0.8500  [29.0s]
+  Epoch [15/15]  train_loss=0.4091  train_acc=0.8512  [29.0s]
+  Fold 1 completed in 437.0s
+============================================================
+
+  [CNN | Outer  1/10]  Computing learning curve …
+
+
+  [!] Ctrl+C detected — training paused after fold 1/10.
+  [!] No checkpoint was saved (fold 0 was interrupted before any fold completed).
+
+  Training paused.  Re-run  python main.py  to resume.
+
+Training paused inside Experiment 1.  Re-run main.py to continue.
